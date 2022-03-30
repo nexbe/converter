@@ -1,22 +1,25 @@
-import { app } from './app';
+import {app} from "./app";
+import nodemailer from "nodemailer";
+import {emailSetting} from "./config/emailSetting";
 
-const start = async () => {
+const start =  () => {
 
-  // if (!process.env.MONGO_URI) {
-  //   throw new Error('MONGO_URI must be defined');
-  // }
-  // if (!process.env.NATS_CLIENT_ID) {
-  //   throw new Error('NATS_CLIENT_ID must be defined');
-  // }
-  // if (!process.env.NATS_URL) {
-  //   throw new Error('NATS_URL must be defined');
-  // }
-  // if (!process.env.NATS_CLUSTER_ID) {
-  //   throw new Error('NATS_CLUSTER_ID must be defined');
-  // }
+//Creating a Nodemailer Transport instance
+  let transporter = nodemailer.createTransport(emailSetting.transport)
 
-  app.listen(3000, () => {
-    console.log('Listening on port 3000!!!!!!!!');
+//Verifying the Nodemailer Transport instance
+  transporter.verify((error, success) => {
+    if (error) {
+      console.error(error);
+      throw error
+    } else {
+      console.log('Server is ready to take messages');
+    }
+  });
+
+  const port = process.env.PORT || '3200'
+  app.listen(port, () => {
+    console.log(`Listening on port ${port}!!`);
   });
 };
 
