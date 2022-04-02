@@ -2,32 +2,69 @@ import express, { Request, Response } from "express";
 import { csvFilesValidateService } from "../services/csvFilesValidateService";
 import { csvFilesValidateUniqueService } from "../services/csvFilesValidateUniqueService";
 import { convertToDate } from "../utils/convertToDateFormat";
-import { dBValidateService } from "../services/dBValidateService";
-import { csvFilesToErrorFolder } from "../services/csvFilesToErrorFolder";
-import { sendEmail } from "../services/sendEmail";
 import { dBIntegrateServices } from "../services/dBIntegrateService";
+import { CsvFile } from "../types/csvFiles-Interface";
+import { dBValidateFileSetService } from "../services/dbValidateFileSetService";
 import { csvFilesToBackup } from "../services/csvFilesToBackup";
-import {CsvFile} from "../types/csvFiles-Interface";
+import { csvFilesToErrorFolder } from "../services/csvFilesToErrorFolder";
 
 /*
- * <Main Functions>
+ * <Functions / Services Usages>
  * csvFilesValidateService
  * csvFilesValidateUniqueService - self
  * onAssignClaimSaleContentType - self
- * dBValidateService
+ * dBValidateFileSetService
  * dBIntegrateServices
- * onNotifyVendor - self
  * csvFilesToBackup
  * csvFilesToErrorFolder
  * sendEmail
  *
  * <Sub Function>
+ * formatIncentivePayload - self
  * assignAcknowledgement - self
  * assignAcknowledgementRemarks - self
  * assignAcknowledgementAttachments -self
  * */
 
+/*
+<REFERENCE>
+E_INCENTIVE_DIR="./files/sp-e-incentive/CSV"
+E_INCENTIVE_HEADER_FILENAME="Acknowledge, AcknowledgeAttachment, AcknowledgeRemarks"
+E_INCENTIVE_HEADER_ACKNOWLEDGE="Acknowledge"
+E_INCENTIVE_HEADER_ACKNOWLEDGE_ATTACHMENT="AcknowledgeAttachment"
+E_INCENTIVE_HEADER_ACKNOWLEDGE_REMARK="AcknowledgeRemarks"
+FOLDER_INCENTIVE="sp-e-incentive"
+* */
+
 const router = express.Router();
+
+// ## Format Payload
+const formatIncentivePayload = async (
+  validCsvFile: any[],
+  incentiveApi: string,
+  attachmentApi: string,
+  incentivePayloadName: string,
+  incentiveAttachmentPayloadName: string,
+  E_INCENTIVE_HEADER_ACKNOWLEDGE: string,
+  E_INCENTIVE_HEADER_ACKNOWLEDGE_ATTACHMENT: string,
+) => {
+
+  const incentive = validCsvFile.filter((file) => file.header === E_INCENTIVE_HEADER_ACKNOWLEDGE)
+  const attachment = validCsvFile.filter((file) => file.header === E_INCENTIVE_HEADER_ACKNOWLEDGE_ATTACHMENT)
+
+  return [
+    {
+      data: incentive,
+      strapiApi: incentiveApi,
+      payloadName: incentivePayloadName
+    },
+    {
+      data: attachment,
+      strapiApi: attachmentApi,
+      payloadName: incentiveAttachmentPayloadName
+    }
+  ]
+}
 
 // ## File Acknowledgement
 const assignAcknowledgement = async (validCsvFile: any) => {
@@ -125,7 +162,7 @@ const assignAcknowledgementAttachments = async (validCsvFile: any) => {
   return payload;
 };
 
-// ## Helper function
+// ## Helper Main function
 async function onAssignIncentiveContentType(csvFile: CsvFile[]) {
   const csvCollection: any = [];
   let response;
@@ -166,10 +203,10 @@ async function onAssignIncentiveContentType(csvFile: CsvFile[]) {
   return { inValidContents, validContents };
 }
 
-// # GET method
+// # METHOD: GET REQUEST
 // # /api/eIncentive
 
-router.get("/api/eIncentive", async (req: Request, res: Response) => {
+router.get("/e_incentive_integrate", async (req: Request, res: Response) => {
   // ## Env Variables
   if (!process.env.E_INCENTIVE_DIR) {
     throw new Error("E_INCENTIVE_DIR variable not found");
@@ -193,24 +230,25 @@ router.get("/api/eIncentive", async (req: Request, res: Response) => {
     );
   }
 
-  if (!process.env.PATH_INCENTIVE) {
-    throw new Error("PATH_INCENTIVE variable not found");
+  if (!process.env.FOLDER_INCENTIVE) {
+    throw new Error("FOLDER_INCENTIVE variable not found");
   }
 
-  // ### Filename, column length and Path
+  // ### Filenames and Paths
   const DIRECTORY = process.env.E_INCENTIVE_DIR;
   const HEADER_FILENAMES = process.env.E_INCENTIVE_HEADER_FILENAME.split(", ");
-  const FOLDER_NAME = process.env.PATH_INCENTIVE;
+  const FOLDER_NAME = process.env.FOLDER_INCENTIVE;
+  const E_INCENTIVE_HEADER_ACKNOWLEDGE = process.env.E_INCENTIVE_HEADER_ACKNOWLEDGE;
+  const E_INCENTIVE_HEADER_ACKNOWLEDGE_ATTACHMENT= process.env.E_INCENTIVE_HEADER_ACKNOWLEDGE_ATTACHMENT;
 
-  // ### Csv Column Length
-  // const E_INCENTIVE_COLUMN_LENGTH = parseInt(process.env.E_INCENTIVE_COLUMN_LENGTH);
-  // const E_INCENTIVE_REMARK_COLUMN_LENGTH = parseInt(process.env.E_INCENTIVE_REMARK_COLUMN_LENGTH);
-  // const E_INCENTIVE_ATTACHMENT_COLUMN_LENGTH = parseInt(process.env.E_INCENTIVE_ATTACHMENT_COLUMN_LENGTH);
-
-  // ### Strapi URLs
+  // API Calls - /api/<strapiAPI_InsertIncentive>
   const strapiAPI_Validate = "e-incentive-validate";
-  const strapiAPI_Insert = "e-incentive-batch";
-  const strapi_payload_name = "eIncentives";
+  const strapiAPI_InsertIncentive = "e-incentive-batch";
+  const strapiAPI_InsertAttachment = "e-incentive-attachment-batch"
+
+  // API Payload assigned
+  const strapi_payloadIncentive_name = "eIncentives";
+  const strapi_payloadAttachment_name = "attachments";
 
   try {
     const { invalidCsvFiles, validCsvFiles, csvCollection } =
@@ -229,7 +267,7 @@ router.get("/api/eIncentive", async (req: Request, res: Response) => {
 
       //Send Email Notification
       const message = `${FOLDER_NAME} integration failed. Incomplete or duplicate files to integrate.`;
-      await sendEmail(FOLDER_NAME, message, csvCollection);
+      // await sendEmail(FOLDER_NAME, message, csvCollection);
 
       return res.status(200).json(message);
     }
@@ -245,34 +283,49 @@ router.get("/api/eIncentive", async (req: Request, res: Response) => {
 
       // Send Email Notification
       const message = `${FOLDER_NAME} integration failed. CSVs has invalid columns or values.`;
-      await sendEmail(FOLDER_NAME, message, inValidContents);
+     // await sendEmail(FOLDER_NAME, message, inValidContents);
 
       return res.status(200).json(message);
     }
 
+
+    // # Validate selected file from set of files.
     const { invalidFilesValidationDB, successFilesValidationDB } =
-      await dBValidateService(validContents, strapiAPI_Validate);
+      await dBValidateFileSetService(validContents, strapiAPI_Validate, E_INCENTIVE_HEADER_ACKNOWLEDGE);
 
     if (invalidFilesValidationDB.length > 0) {
       // Move files to error folder
-      await csvFilesToErrorFolder(DIRECTORY, FOLDER_NAME);
+       await csvFilesToErrorFolder(DIRECTORY, FOLDER_NAME);
 
       const message = `${FOLDER_NAME} integration failed. Incomplete or existing data records to proceed`;
-      await sendEmail(FOLDER_NAME, message, invalidFilesValidationDB);
+     //  await sendEmail(FOLDER_NAME, message, invalidFilesValidationDB);
       return res.status(200).json(message);
     }
 
-    // Insert Database
-    await dBIntegrateServices(
-      successFilesValidationDB,
-      strapiAPI_Insert,
-      strapi_payload_name
+    // Format payload before insert
+    const formatedIncentivesPayload = await formatIncentivePayload(
+      validContents,
+      strapiAPI_InsertIncentive,
+      strapiAPI_InsertAttachment,
+      strapi_payloadIncentive_name,
+      strapi_payloadAttachment_name,
+      E_INCENTIVE_HEADER_ACKNOWLEDGE,
+      E_INCENTIVE_HEADER_ACKNOWLEDGE_ATTACHMENT
     );
+
+    // Insert into Database through strapi Apis
+    for (const item of formatedIncentivesPayload) {
+      await dBIntegrateServices(
+        item.data,
+        item.strapiApi,
+        item.payloadName,
+      );
+    }
 
     // Backup Folder
     await csvFilesToBackup(DIRECTORY, csvCollection);
 
-    return res.json("E-Incentive integration success.");
+    return res.json("E-Incentive integration was completed.");
   } catch (error) {
     throw error;
   }

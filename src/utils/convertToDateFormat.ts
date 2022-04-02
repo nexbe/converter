@@ -6,5 +6,6 @@ export function convertToDate(dateString: string) {
 
 export function convertContinuedStringToDate(dateString: string) {
   let d = [dateString.slice(0, 4), "/", dateString.slice(4)].join("");
-  return new Date([d.slice(0, 7), "/", d.slice(7)].join(""));
+  return new Date([d.slice(0, 7), "/", d.slice(7)].join("")).toISOString();
+
 }

@@ -3,7 +3,7 @@ import { chunkArray } from "../utils/checkArray";
 import { CsvFile } from "../types/csvFiles-Interface";
 
 export async function dBIntegrateServices(
-  csvFiles: CsvFile[],
+  csvFiles: any[],
   strapiApiInsert: string,
   strapi_payload_name: string
 ) {

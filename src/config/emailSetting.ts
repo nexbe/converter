@@ -2,8 +2,8 @@ import path from "path";
 
 export const emailSetting :any = {
     transport:{
-        host: process.env.SMTP_HOST || 'smtp.gmail.com',
-        port: process.env.SMTP_PORT || 465, //SMTP Port
+        host: process.env.SMTP_HOST,
+        port: process.env.SMTP_PORT,
         secure: true,
         requireTLS: true,
         auth: {
@@ -15,6 +15,6 @@ export const emailSetting :any = {
             rejectUnauthorized: true,
         },
     },
-    templatePath: path.join(__dirname, 'templates', 'integrationFailed.ejs')
+    templatePath: path.join(__dirname, 'templates', 'integrationFailed.ejs'),
 };
 
