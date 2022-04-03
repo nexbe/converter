@@ -1,2 +1,0 @@
-ClaimID,BatchNo,BuyerCode,VendorCode,RSPStartDate,RSPEndDate,SupplierClaimAmount,Remark,FileName,FilePath,CreateDate,UpdateDate,IsTaxInvoiceFileFound,SendStatus
-5226,P00054362,MSKOH,CPE,01/10/2021 12:00:00a am,31/10/2021 12:00:00 am,1959.650000,,Claim_Sales_Summary_Report_CPE_MSKOH_P00054362_03NOV21.xlsx,Claim_Sales_Summary_Report_CPE_MSKOH_P00054362_03NOV21.xlsx,25/11/2021 10:22:06 am,,False,False

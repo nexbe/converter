@@ -34,20 +34,26 @@ async function onNotifyVendor(
   csvFiles: CsvFile[],
   strapiApiNotifyVendor: string
 ) {
-  // Extract Vendors
-  const unflattenVendors = csvFiles.map((item) =>
-    item.data.map((dataItem) => dataItem.vendor)
-  );
-  const flattenVendors = unflattenVendors.flat();
-  const uniqueVendors = [...new Set(flattenVendors)];
+  try {
+    // Extract Vendors
+    const unflattenVendors = csvFiles.map((item) =>
+      item.data.map((dataItem) => dataItem.vendor)
+    );
+    const flattenVendors = unflattenVendors.flat();
+    const uniqueVendors = [...new Set(flattenVendors)];
 
-  // ### POST REQUEST to notify vendor ( original code )
-  await fetchRequestUrl(strapiApiNotifyVendor, "POST", {
-    body: JSON.stringify({
+    const payload = JSON.stringify({
       vendors: uniqueVendors,
       emailBody: "There are new claim sales for your vendor. Please check.",
-    }),
-  });
+    });
+
+    // ### POST REQUEST to notify vendor ( original code )
+    await fetchRequestUrl(strapiApiNotifyVendor, "POST", {
+      body: payload,
+    });
+  } catch (e) {
+    throw e;
+  }
 }
 
 // ## ClaimSale Helper Main function
@@ -163,7 +169,8 @@ router.get("/claim_sale_integrate", async (req: Request, res: Response) => {
       );
 
       // On sales Claim have function to notify vendor for now
-      await onNotifyVendor(successFilesValidationDB, strapiApi_Notify_Vendor);
+      // No Function Call on Strapi. < INCOMPLETE >
+      // await onNotifyVendor(successFilesValidationDB, strapiApi_Notify_Vendor);
 
       // Backup files
       await csvFilesToBackup(DIRECTORY, successFilesValidationDB);
@@ -177,15 +184,15 @@ router.get("/claim_sale_integrate", async (req: Request, res: Response) => {
     ];
 
     if (!isEmptyArray(joinInvalidFiles)) {
-      console.log('joinInvalidFiles', joinInvalidFiles)
+      console.log("joinInvalidFiles", joinInvalidFiles);
 
       // Move files to error folder
       await csvFilesToErrorFolder(DIRECTORY, FOLDER_NAME);
 
       // Send Email Notification
-      // const message = `${FOLDER_NAME} integration failed.`;
-      //
-      // await sendEmail(FOLDER_NAME, message, joinInvalidFiles);
+      const message = `${FOLDER_NAME} integration failed.`;
+
+      await sendEmail(FOLDER_NAME, message, joinInvalidFiles);
     }
 
     return res.json("SP-Claim-Sale integration was completed.");

@@ -3,21 +3,35 @@
   <component name="CsvFileAttributes">
     <option name="attributeMap">
       <map>
-        <entry key="\files\sp-claim-sale\CSV\ClaimSalesReportHeader_20211125_151251.csv">
+        <entry key="\errorFiles\sp-claim-sale\ClaimSalesReportHeader_20211125_151251.csv">
           <value>
             <Attribute>
               <option name="separator" value="," />
             </Attribute>
           </value>
         </entry>
-        <entry key="\files\sp-claim-sale\CSV\ClaimSalesReportHeader_20211125_151253.csv">
+        <entry key="\errorFiles\sp-claim-sale\ClaimSalesReportHeader_20211125_151254.csv">
           <value>
             <Attribute>
               <option name="separator" value="," />
             </Attribute>
           </value>
         </entry>
-        <entry key="\files\sp-claim-sale\CSV\ClaimSalesReportHeader_20211125_151254.csv">
+        <entry key="\files\sp-e-incentive\CSV\AcknowledgeAttachment_20211119_115316.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\files\sp-e-incentive\CSV\AcknowledgeRemarks_20211119_115316.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\files\sp-e-incentive\CSV\Acknowledge_20211119_115315.csv">
           <value>
             <Attribute>
               <option name="separator" value="," />
@@ -38,13 +52,6 @@
             </Attribute>
           </value>
         </entry>
-        <entry key="\files\sp-inventory-list\CSV\EInventory_20211119_155030.csv">
-          <value>
-            <Attribute>
-              <option name="separator" value="," />
-            </Attribute>
-          </value>
-        </entry>
         <entry key="\files\sp-po-gid\CSV\B2BPOGIDDETAILS_20211214_092028.csv">
           <value>
             <Attribute>
@@ -53,13 +60,6 @@
           </value>
         </entry>
         <entry key="\files\sp-po-gid\CSV\B2BPOGIDHEADER_20220104_080515.csv">
-          <value>
-            <Attribute>
-              <option name="separator" value="," />
-            </Attribute>
-          </value>
-        </entry>
-        <entry key="\files\sp-timesetting\CSV\timesettings_20211214_120511.csv">
           <value>
             <Attribute>
               <option name="separator" value="," />

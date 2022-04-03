@@ -1,4 +1,0 @@
-ClaimID,BatchNo,BuyerCode,VendorCode,RSPStartDate,RSPEndDate,SupplierClaimAmount,Remark,FileName,FilePath,CreateDate,UpdateDate,IsTaxInvoiceFileFound,SendStatus
-5264,P00053582,MSKOH,WLS1,01/10/2021 12:00:00 am,31/10/2021 12:00:00 am,459.600000,,Claim_Sales_Summary_Report_WLS1_MSKOH_P00053582_03NOV21.xlsx,Claim_Sales_Summary_Report_WLS1_MSKOH_P00053582_03NOV21.xlsx,25/11/2021 10:22:06 am,,False,False
-5265,P00054884,MSKOH,ZPP11,01/10/2021 12:00:00 am,31/10/2021 12:00:00 am,61.600000,,Claim_Sales_Summary_Report_ZPP11_MSKOH_P00054884_03NOV21.xlsx,Claim_Sales_Summary_Report_ZPP11_MSKOH_P00054884_03NOV21.xlsx,25/11/2021 10:22:06 am,,False,False
-5266,P00054885,MSKOH,ZPP11,01/10/2021 12:00:00 am,31/10/2021 12:00:00 am,357.240000,,Claim_Sales_Summary_Report_ZPP11_MSKOH_P00054885_03NOV21.xlsx,Claim_Sales_Summary_Report_ZPP11_MSKOH_P00054885_03NOV21.xlsx,25/11/2021 10:22:06 am,,False,False
