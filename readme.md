@@ -6,6 +6,8 @@
 
 - Ensure Strapi controllers unlocked to public, otherwise Forbidden!. Unless you have public key to use. Implementation be advised.
 - Ensure to create .**env** to run development and **.env.prod** to run production mode. Refer to .env.example
+- This application running Typscript and also using rimraf to do cleaning, If your local doesn’t run the application. Kindly install the following:
+    - `npm i -g typscript rimraf`
 
  
 
@@ -53,6 +55,8 @@ outlet
 | Post | "/outlets-time-settings-batch” | "outlet.timeSettingsBatch” |
 
 ## Run Application
+
+`npm install` to install the dependencies
 
 Currently running at port 3300, 
 
