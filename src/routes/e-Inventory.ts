@@ -86,7 +86,6 @@ async function onAssignInventoryContentType(csvFile: CsvFile[]) {
 }
 
 // # METHOD Get Request
-// # /api/inventory
 
 router.get("/inventory_list_integrate", async (req: Request, res: Response) => {
   if (!process.env.INVENTORY_LIST_DIR) {

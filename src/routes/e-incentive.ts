@@ -46,25 +46,28 @@ const formatIncentivePayload = async (
   incentivePayloadName: string,
   incentiveAttachmentPayloadName: string,
   E_INCENTIVE_HEADER_ACKNOWLEDGE: string,
-  E_INCENTIVE_HEADER_ACKNOWLEDGE_ATTACHMENT: string,
+  E_INCENTIVE_HEADER_ACKNOWLEDGE_ATTACHMENT: string
 ) => {
-
-  const incentive = validCsvFile.filter((file) => file.header === E_INCENTIVE_HEADER_ACKNOWLEDGE)
-  const attachment = validCsvFile.filter((file) => file.header === E_INCENTIVE_HEADER_ACKNOWLEDGE_ATTACHMENT)
+  const incentive = validCsvFile.filter(
+    (file) => file.header === E_INCENTIVE_HEADER_ACKNOWLEDGE
+  );
+  const attachment = validCsvFile.filter(
+    (file) => file.header === E_INCENTIVE_HEADER_ACKNOWLEDGE_ATTACHMENT
+  );
 
   return [
     {
       data: incentive,
       strapiApi: incentiveApi,
-      payloadName: incentivePayloadName
+      payloadName: incentivePayloadName,
     },
     {
       data: attachment,
       strapiApi: attachmentApi,
-      payloadName: incentiveAttachmentPayloadName
-    }
-  ]
-}
+      payloadName: incentiveAttachmentPayloadName,
+    },
+  ];
+};
 
 // ## File Acknowledgement
 const assignAcknowledgement = async (validCsvFile: any) => {
@@ -204,7 +207,6 @@ async function onAssignIncentiveContentType(csvFile: CsvFile[]) {
 }
 
 // # METHOD: GET REQUEST
-// # /api/eIncentive
 
 router.get("/e_incentive_integrate", async (req: Request, res: Response) => {
   // ## Env Variables
@@ -238,13 +240,15 @@ router.get("/e_incentive_integrate", async (req: Request, res: Response) => {
   const DIRECTORY = process.env.E_INCENTIVE_DIR;
   const HEADER_FILENAMES = process.env.E_INCENTIVE_HEADER_FILENAME.split(", ");
   const FOLDER_NAME = process.env.FOLDER_INCENTIVE;
-  const E_INCENTIVE_HEADER_ACKNOWLEDGE = process.env.E_INCENTIVE_HEADER_ACKNOWLEDGE;
-  const E_INCENTIVE_HEADER_ACKNOWLEDGE_ATTACHMENT= process.env.E_INCENTIVE_HEADER_ACKNOWLEDGE_ATTACHMENT;
+  const E_INCENTIVE_HEADER_ACKNOWLEDGE =
+    process.env.E_INCENTIVE_HEADER_ACKNOWLEDGE;
+  const E_INCENTIVE_HEADER_ACKNOWLEDGE_ATTACHMENT =
+    process.env.E_INCENTIVE_HEADER_ACKNOWLEDGE_ATTACHMENT;
 
   // API Calls - /api/<strapiAPI_InsertIncentive>
   const strapiAPI_Validate = "e-incentive-validate";
   const strapiAPI_InsertIncentive = "e-incentive-batch";
-  const strapiAPI_InsertAttachment = "e-incentive-attachment-batch"
+  const strapiAPI_InsertAttachment = "e-incentive-attachment-batch";
 
   // API Payload assigned
   const strapi_payloadIncentive_name = "eIncentives";
@@ -283,22 +287,25 @@ router.get("/e_incentive_integrate", async (req: Request, res: Response) => {
 
       // Send Email Notification
       const message = `${FOLDER_NAME} integration failed. CSVs has invalid columns or values.`;
-     // await sendEmail(FOLDER_NAME, message, inValidContents);
+      // await sendEmail(FOLDER_NAME, message, inValidContents);
 
       return res.status(200).json(message);
     }
 
-
     // # Validate selected file from set of files.
     const { invalidFilesValidationDB, successFilesValidationDB } =
-      await dBValidateFileSetService(validContents, strapiAPI_Validate, E_INCENTIVE_HEADER_ACKNOWLEDGE);
+      await dBValidateFileSetService(
+        validContents,
+        strapiAPI_Validate,
+        E_INCENTIVE_HEADER_ACKNOWLEDGE
+      );
 
     if (invalidFilesValidationDB.length > 0) {
       // Move files to error folder
-       await csvFilesToErrorFolder(DIRECTORY, FOLDER_NAME);
+      await csvFilesToErrorFolder(DIRECTORY, FOLDER_NAME);
 
       const message = `${FOLDER_NAME} integration failed. Incomplete or existing data records to proceed`;
-     //  await sendEmail(FOLDER_NAME, message, invalidFilesValidationDB);
+      //  await sendEmail(FOLDER_NAME, message, invalidFilesValidationDB);
       return res.status(200).json(message);
     }
 
@@ -315,11 +322,7 @@ router.get("/e_incentive_integrate", async (req: Request, res: Response) => {
 
     // Insert into Database through strapi Apis
     for (const item of formatedIncentivesPayload) {
-      await dBIntegrateServices(
-        item.data,
-        item.strapiApi,
-        item.payloadName,
-      );
+      await dBIntegrateServices(item.data, item.strapiApi, item.payloadName);
     }
 
     // Backup Folder

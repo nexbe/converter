@@ -125,7 +125,6 @@ async function onAssignClaimSaleContentType(csvFile: CsvFile[]) {
 const router = express.Router();
 
 // # METHOD: GET REQUEST
-// # /api/claimSale
 
 router.get("/claim_sale_integrate", async (req: Request, res: Response) => {
   if (!process.env.CLAIM_SALE_DIR) {
@@ -148,7 +147,7 @@ router.get("/claim_sale_integrate", async (req: Request, res: Response) => {
   // ### Strapi APIs names to call
   const strapiAPI_Validate = "claim-sale-validate";
   const strapiAPI_Insert = "claim-sale-batch";
-  const strapiApi_Notify_Vendor = "claim-sale-notify";
+  const strapiApi_Notify_Vendor = "claim-sale-notify"; // This is not exist in Strapi
   const strapi_payload_name = "claimSales";
 
   try {

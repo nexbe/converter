@@ -91,7 +91,6 @@ async function onAssignPaymentVoucherContentType(csvFile: CsvFile[]) {
 }
 
 // # METHOD GET Request
-// # /api/paymentVoucher
 router.get(
   "/e_payment_voucher_integrate",
   async (req: Request, res: Response) => {
